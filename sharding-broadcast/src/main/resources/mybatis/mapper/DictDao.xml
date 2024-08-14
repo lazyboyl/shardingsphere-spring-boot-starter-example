@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lazyboyl.sharding.broadcast.dao.DictDao">
+    <resultMap id="BaseResultMap" type="com.lazyboyl.sharding.broadcast.entity.Dict">
+        <id column="dict_id" jdbcType="VARCHAR" property="dictId"/>
+        <result column="dict_type" jdbcType="VARCHAR" property="dictType"/>
+        <result column="dict_code" jdbcType="VARCHAR" property="dictCode"/>
+        <result column="dict_value" jdbcType="VARCHAR" property="dictValue"/>
+        <result column="dict_text" jdbcType="VARCHAR" property="dictText"/>
+    </resultMap>
+
+    <update id="updateDict" >
+        update t_dict set dict_type = #{dictType},dict_code=#{dictCode},dict_value=#{dictValue},dict_text=#{dictText} where dict_id = #{dictId}
+    </update>
+
+</mapper>

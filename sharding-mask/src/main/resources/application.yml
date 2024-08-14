@@ -21,11 +21,16 @@ spring:
         username: sharding
         password: sharding321!
     rules:
+      # 脱敏配置
       mask:
         tables:
+          # 脱敏表
           t_mask:
+            # 脱敏字段配置
             columns:
+              # 具体脱敏字段
               mask_from_x_to_y:
+                # 使用的脱敏算法
                 maskAlgorithm: mask_from_x_to_y_id
               myself_mask:
                 maskAlgorithm: myself_mask_id
@@ -36,21 +41,26 @@ spring:
               keep_first_n_last_m_mask:
                 maskAlgorithm: keep_first_n_last_m_mask_id
         maskAlgorithms:
+          # 从第二位开始到第五位采用星号替换
           mask_from_x_to_y_id:
             type: MASK_FROM_X_TO_Y
             props:
               from-x: 2
               to-y: 5
               replace-char: '*'
+          # 采用自定义的脱敏算法
           myself_mask_id:
             type: MyselfMask
+          # 采用MD5算法进行脱敏
           md5_mask_id:
             type: MD5
+          # 在@符号之前的使用星号替换
           mask_before_special_chars_mask_id:
             type: MASK_BEFORE_SPECIAL_CHARS
             props:
               special-chars: '@'
               replace-char: '*'
+          # 第三到第四以外的用星号替换
           keep_first_n_last_m_mask_id:
             type: KEEP_FIRST_N_LAST_M
             props:
@@ -62,14 +72,14 @@ spring:
           mask_table_complex:
             type: INLINE
             props:
-              algorithm-expression: t_mask$->{id % 4}
+              algorithm-expression: t_mask${id % 4}
           mask_db_complex:
             type: INLINE
             props:
-              algorithm-expression: db$->{id % 2}
+              algorithm-expression: db${id % 2}
         tables:
           t_mask:
-            actualDataNodes: db$->{0..1}.t_mask$->{0..3}
+            actualDataNodes: db${0..1}.t_mask${0..3}
             tableStrategy:
               standard:
                 shardingColumn: id
@@ -91,9 +101,15 @@ spring:
           sharding_key_required_auditor:
             type: DML_SHARDING_CONDITIONS
     props:
+      # SQL语句打印
       sql-show: true
+      # 简化打印SQL语句
+      sql-simple: true
+      # 禁用执行SQL用于获取数据库元数据
+      check-table-metadata-enabled: true
 
-
+server:
+  port: 8003
 
 logging:
   config: classpath:logConfig/logback-dev.xml

@@ -8,7 +8,6 @@ spring:
     allow-bean-definition-overriding: true
   shardingsphere:
     dataSources:
-      # ???????
       db0:
         dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
         driverClassName: com.mysql.jdbc.Driver
@@ -21,21 +20,15 @@ spring:
         url: jdbc:mysql://114.132.79.213:3306/sharding_db1?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
         username: sharding
         password: sharding321!
-      # HikariCP?????
       shadow_ds0:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         url: jdbc:mysql://114.132.79.213:3306/shadow_ds0?serverTimezone=UTC&useSSL=false
         username: sharding
         password: sharding321!
-        # ??????????????????
         connectionTimeoutMilliseconds: 30000
-        # ????????????????????
         idleTimeoutMilliseconds: 60000
-        # ?????????????
         maxLifetimeMilliseconds: 1800000
-        # ????????????
         maxPoolSize: 10
-        # ????????????
         minPoolSize: 1
       shadow_ds1:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
@@ -48,9 +41,8 @@ spring:
         maxPoolSize: 10
         minPoolSize: 1
     rules:
-      # ???????
       shadow:
-        # ??????????
+        # 配置影子库数据源
         dataSources:
           shadowDataSource0:
             productionDataSourceName: db0
@@ -58,14 +50,15 @@ spring:
           shadowDataSource1:
             productionDataSourceName: db1
             shadowDataSourceName: shadow_ds1
+        # 配置影子库的表的规则
         tables:
-          # ????????
+          # 影子表
           t_order:
-            # ?????
+            # 影子数据源
             dataSourceNames:
               - shadowDataSource0
               - shadowDataSource1
-            # ??????
+            # 触发影子库的规则
             shadowAlgorithmNames:
               - user_id_update_match_algorithm
               - user_id_insert_match_algorithm
@@ -73,51 +66,49 @@ spring:
               - user_id_select_match_algorithm
               - sql_hint_algorithm
         defaultShadowAlgorithmName: sql_hint_algorithm
+        # 配置影子柜子
         shadowAlgorithms:
-          # ?????user_id?120??????????
           user_id_update_match_algorithm:
             type: VALUE_MATCH
             props:
               operation: UPDATE
               column: user_id
               value: 120
-          # ?????user_id?120??????????
           user_id_delete_match_algorithm:
             type: VALUE_MATCH
             props:
               operation: DELETE
               column: user_id
               value: 120
-          # ?????user_id?120??????????
           user_id_insert_match_algorithm:
             type: VALUE_MATCH
             props:
               operation: INSERT
               column: user_id
               value: 120
-          # ?????user_id?120??????????
           user_id_select_match_algorithm:
             type: VALUE_MATCH
             props:
               operation: SELECT
               column: user_id
               value: 120
-          # ???sql?????/* SHARDINGSPHERE_HINT: SHADOW=true */????????
           sql_hint_algorithm:
             type: SQL_HINT
       sharding:
+        # 分片规则
         shardingAlgorithms:
           shadow_db:
             type: INLINE
             props:
-              algorithm-expression: shadowDataSource$->{user_id % 2}
+              # 此处使用影子库数据源
+              algorithm-expression: shadowDataSource${user_id % 2}
           table-inline:
             type: INLINE
             props:
-              algorithm-expression: t_order$->{order_id % 4}
+              algorithm-expression: t_order${order_id % 4}
         tables:
           t_order:
-            actualDataNodes: shadowDataSource$->{0..1}.t_order$->{0..3}
+            actualDataNodes: shadowDataSource${0..1}.t_order${0..3}
             tableStrategy:
               standard:
                 shardingColumn: order_id
@@ -129,20 +120,27 @@ spring:
             keyGenerateStrategy:
               column: order_id
               keyGeneratorName: snowflake
-            # ?????????????????????????????????
             auditStrategy:
               auditorNames:
                 - sharding_key_required_auditor
         keyGenerators:
+          # 配置雪花算法
           snowflake:
             type: SNOWFLAKE
         auditors:
+          # 配置审计算法
           sharding_key_required_auditor:
             type: DML_SHARDING_CONDITIONS
     props:
+      # SQL语句打印
       sql-show: true
+      # 简化打印SQL语句
+      sql-simple: true
+      # 禁用执行SQL用于获取数据库元数据
+      check-table-metadata-enabled: true
 
-
+server:
+  port: 8003
 
 logging:
   config: classpath:logConfig/logback-dev.xml

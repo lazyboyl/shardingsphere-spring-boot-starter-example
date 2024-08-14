@@ -35,14 +35,14 @@ spring:
           table-inline:
             type: INLINE
             props:
-              algorithm-expression: t_order$->{order_id % 4}
+              algorithm-expression: t_order${order_id % 4}
           database-inline:
             type: INLINE
             props:
-              algorithm-expression: db$->{order_id % 2}
+              algorithm-expression: db${order_id % 2}
         tables:
           t_order_complex:
-            actualDataNodes: db$->{0..1}.t_order_complex$->{0..3}
+            actualDataNodes: db${0..1}.t_order_complex${0..3}
             tableStrategy:
               complex:
                 # 配置分片键
@@ -60,7 +60,7 @@ spring:
               column: order_id
               keyGeneratorName: snowflake
           t_order:
-            actualDataNodes: db$->{0..1}.t_order$->{0..3}
+            actualDataNodes: db${0..1}.t_order${0..3}
             tableStrategy:
               standard:
                 shardingColumn: order_id
@@ -79,9 +79,15 @@ spring:
           sharding_key_required_auditor:
             type: DML_SHARDING_CONDITIONS
     props:
+      # SQL语句打印
       sql-show: true
+      # 简化打印SQL语句
+      sql-simple: true
+      # 禁用执行SQL用于获取数据库元数据
+      check-table-metadata-enabled: true
 
-
+server:
+  port: 8003
 
 logging:
   config: classpath:logConfig/logback-dev.xml

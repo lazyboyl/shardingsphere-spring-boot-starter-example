@@ -25,6 +25,8 @@
         <module>sharding-readwrite</module>
         <module>sharding-encrypt</module>
         <module>sharding-mask</module>
+        <module>sharding-single</module>
+        <module>sharding-broadcast</module>
     </modules>
 
     <dependencies>

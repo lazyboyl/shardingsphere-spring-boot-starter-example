@@ -33,34 +33,42 @@ spring:
               # 配置密码的加密规则
               pwd:
                 cipher:
+                  # 加密字段
                   name: pwd
+                  # 加密使用规则
                   encryptorName: aes_encryptor
         encryptors:
+          # 空加密算法
           none:
             type: NONE
+          # 自定义MD5加盐加密算法
           md5_myself:
             type: MD5NEW
             props:
               slat: 123456abc
+          # AES加密算法
           aes_encryptor:
             type: AES
             props:
               aes-key-value: 123456abc
+          # MD5加密算法
           assisted_encryptor:
             type: MD5
       sharding:
+        # 分片规则配置
         shardingAlgorithms:
           user_table_complex:
             type: INLINE
             props:
-              algorithm-expression: t_user$->{user_id % 4}
+              algorithm-expression: t_user${user_id % 4}
           user_db_complex:
             type: INLINE
             props:
-              algorithm-expression: db$->{user_id % 2}
+              algorithm-expression: db${user_id % 2}
         tables:
+          # 配置t_user表的分片规则
           t_user:
-            actualDataNodes: db$->{0..1}.t_user$->{0..3}
+            actualDataNodes: db${0..1}.t_user${0..3}
             tableStrategy:
               standard:
                 shardingColumn: user_id
@@ -69,22 +77,32 @@ spring:
               standard:
                 shardingColumn: user_id
                 shardingAlgorithmName: user_db_complex
+            # 配置user_id使用雪花算法生产
             keyGenerateStrategy:
               column: user_id
               keyGeneratorName: snowflake
+            # 配置审计算法
             auditStrategy:
               auditorNames:
                 - sharding_key_required_auditor
         keyGenerators:
+          # 配置雪花算法
           snowflake:
             type: SNOWFLAKE
         auditors:
+          # 配置审计算法
           sharding_key_required_auditor:
             type: DML_SHARDING_CONDITIONS
     props:
+      # SQL语句打印
       sql-show: true
+      # 简化打印SQL语句
+      sql-simple: true
+      # 禁用执行SQL用于获取数据库元数据
+      check-table-metadata-enabled: true
 
-
+server:
+  port: 8003
 
 logging:
   config: classpath:logConfig/logback-dev.xml
