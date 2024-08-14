@@ -1,0 +1,97 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  application:
+    name: sharding-example
+  main:
+    allow-bean-definition-overriding: true
+  shardingsphere:
+    dataSources:
+      # 阿里数据源配置
+      db0:
+        dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://114.132.79.213:3306/sharding_db0?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
+        username: sharding
+        password: sharding321!
+      db1:
+        dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://114.132.79.213:3306/sharding_db1?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
+        username: sharding
+        password: sharding321!
+    rules:
+      sharding:
+        shardingAlgorithms:
+          table-complex:
+            type: OrderTableComplex
+            props:
+              algorithm-table: t_order_complex
+          database-complex:
+            type: OrderDbComplex
+            props:
+              algorithm-database: db
+          table-inline:
+            type: INLINE
+            props:
+              algorithm-expression: t_order$->{order_id % 4}
+          database-inline:
+            type: INLINE
+            props:
+              algorithm-expression: db$->{order_id % 2}
+        tables:
+          t_order_complex:
+            actualDataNodes: db$->{0..1}.t_order_complex$->{0..3}
+            tableStrategy:
+              complex:
+                # 配置分片键
+                shardingColumns: order_id,user_id
+                # 此处使用的就是我们在sharding-algorithms里面定义的规则
+                shardingAlgorithmName: table-complex
+            # 配置t_order的分库规则
+            databaseStrategy:
+              complex:
+                # 配置分片键
+                shardingColumns: order_id,user_id
+                # 此处使用的就是我们在sharding-algorithms里面定义的规则
+                shardingAlgorithmName: database-complex
+            keyGenerateStrategy:
+              column: order_id
+              keyGeneratorName: snowflake
+          t_order:
+            actualDataNodes: db$->{0..1}.t_order$->{0..3}
+            tableStrategy:
+              standard:
+                shardingColumn: order_id
+                shardingAlgorithmName: table-inline
+            databaseStrategy:
+              standard:
+                shardingColumn: order_id
+                shardingAlgorithmName: database-inline
+            keyGenerateStrategy:
+              column: order_id
+              keyGeneratorName: snowflake
+        keyGenerators:
+          snowflake:
+            type: SNOWFLAKE
+        auditors:
+          sharding_key_required_auditor:
+            type: DML_SHARDING_CONDITIONS
+    props:
+      sql-show: true
+
+
+
+logging:
+  config: classpath:logConfig/logback-dev.xml
+  level:
+    root: INFO
+    com:
+      github:
+        lazyboyl:
+          shardingsphere: DEBUG
+
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml

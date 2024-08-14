@@ -1,0 +1,109 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  application:
+    name: sharding-mask
+  main:
+    allow-bean-definition-overriding: true
+  shardingsphere:
+    dataSources:
+      db0:
+        dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://114.132.79.213:3306/sharding_db0?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
+        username: sharding
+        password: sharding321!
+      db1:
+        dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://114.132.79.213:3306/sharding_db1?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
+        username: sharding
+        password: sharding321!
+    rules:
+      mask:
+        tables:
+          t_mask:
+            columns:
+              mask_from_x_to_y:
+                maskAlgorithm: mask_from_x_to_y_id
+              myself_mask:
+                maskAlgorithm: myself_mask_id
+              md5_mask:
+                maskAlgorithm: md5_mask_id
+              mask_before_special_chars_mask:
+                maskAlgorithm: mask_before_special_chars_mask_id
+              keep_first_n_last_m_mask:
+                maskAlgorithm: keep_first_n_last_m_mask_id
+        maskAlgorithms:
+          mask_from_x_to_y_id:
+            type: MASK_FROM_X_TO_Y
+            props:
+              from-x: 2
+              to-y: 5
+              replace-char: '*'
+          myself_mask_id:
+            type: MyselfMask
+          md5_mask_id:
+            type: MD5
+          mask_before_special_chars_mask_id:
+            type: MASK_BEFORE_SPECIAL_CHARS
+            props:
+              special-chars: '@'
+              replace-char: '*'
+          keep_first_n_last_m_mask_id:
+            type: KEEP_FIRST_N_LAST_M
+            props:
+              first-n: 3
+              last-m: 4
+              replace-char: '*'
+      sharding:
+        shardingAlgorithms:
+          mask_table_complex:
+            type: INLINE
+            props:
+              algorithm-expression: t_mask$->{id % 4}
+          mask_db_complex:
+            type: INLINE
+            props:
+              algorithm-expression: db$->{id % 2}
+        tables:
+          t_mask:
+            actualDataNodes: db$->{0..1}.t_mask$->{0..3}
+            tableStrategy:
+              standard:
+                shardingColumn: id
+                shardingAlgorithmName: mask_table_complex
+            databaseStrategy:
+              standard:
+                shardingColumn: id
+                shardingAlgorithmName: mask_db_complex
+            keyGenerateStrategy:
+              column: id
+              keyGeneratorName: snowflake
+            auditStrategy:
+              auditorNames:
+                - sharding_key_required_auditor
+        keyGenerators:
+          snowflake:
+            type: SNOWFLAKE
+        auditors:
+          sharding_key_required_auditor:
+            type: DML_SHARDING_CONDITIONS
+    props:
+      sql-show: true
+
+
+
+logging:
+  config: classpath:logConfig/logback-dev.xml
+  level:
+    root: INFO
+    com:
+      github:
+        lazyboyl:
+          shardingsphere: DEBUG
+
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml

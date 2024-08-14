@@ -1,0 +1,100 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  application:
+    name: sharding-encrypt
+  main:
+    allow-bean-definition-overriding: true
+  shardingsphere:
+    dataSources:
+      db0:
+        dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://114.132.79.213:3306/sharding_db0?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
+        username: sharding
+        password: sharding321!
+      db1:
+        dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://114.132.79.213:3306/sharding_db1?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
+        username: sharding
+        password: sharding321!
+    rules:
+      #  定义加密规则
+      encrypt:
+        tables:
+          t_user:
+            columns:
+              user_name:
+                cipher:
+                  name: user_name
+                  encryptorName: none
+              # 配置密码的加密规则
+              pwd:
+                cipher:
+                  name: pwd
+                  encryptorName: aes_encryptor
+        encryptors:
+          none:
+            type: NONE
+          md5_myself:
+            type: MD5NEW
+            props:
+              slat: 123456abc
+          aes_encryptor:
+            type: AES
+            props:
+              aes-key-value: 123456abc
+          assisted_encryptor:
+            type: MD5
+      sharding:
+        shardingAlgorithms:
+          user_table_complex:
+            type: INLINE
+            props:
+              algorithm-expression: t_user$->{user_id % 4}
+          user_db_complex:
+            type: INLINE
+            props:
+              algorithm-expression: db$->{user_id % 2}
+        tables:
+          t_user:
+            actualDataNodes: db$->{0..1}.t_user$->{0..3}
+            tableStrategy:
+              standard:
+                shardingColumn: user_id
+                shardingAlgorithmName: user_table_complex
+            databaseStrategy:
+              standard:
+                shardingColumn: user_id
+                shardingAlgorithmName: user_db_complex
+            keyGenerateStrategy:
+              column: user_id
+              keyGeneratorName: snowflake
+            auditStrategy:
+              auditorNames:
+                - sharding_key_required_auditor
+        keyGenerators:
+          snowflake:
+            type: SNOWFLAKE
+        auditors:
+          sharding_key_required_auditor:
+            type: DML_SHARDING_CONDITIONS
+    props:
+      sql-show: true
+
+
+
+logging:
+  config: classpath:logConfig/logback-dev.xml
+  level:
+    root: INFO
+    com:
+      github:
+        lazyboyl:
+          shardingsphere: DEBUG
+
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml

@@ -1,0 +1,4 @@
+# Project exclude paths
+/sharding-encrypt/target/
+/sharding-mask/target/
+/sharding-readwrite/target/

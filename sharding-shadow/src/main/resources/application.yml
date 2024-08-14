@@ -1,0 +1,158 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  application:
+    name: sharding-shadow
+  main:
+    allow-bean-definition-overriding: true
+  shardingsphere:
+    dataSources:
+      # ???????
+      db0:
+        dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://114.132.79.213:3306/sharding_db0?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
+        username: sharding
+        password: sharding321!
+      db1:
+        dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://114.132.79.213:3306/sharding_db1?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
+        username: sharding
+        password: sharding321!
+      # HikariCP?????
+      shadow_ds0:
+        dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+        url: jdbc:mysql://114.132.79.213:3306/shadow_ds0?serverTimezone=UTC&useSSL=false
+        username: sharding
+        password: sharding321!
+        # ??????????????????
+        connectionTimeoutMilliseconds: 30000
+        # ????????????????????
+        idleTimeoutMilliseconds: 60000
+        # ?????????????
+        maxLifetimeMilliseconds: 1800000
+        # ????????????
+        maxPoolSize: 10
+        # ????????????
+        minPoolSize: 1
+      shadow_ds1:
+        dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+        url: jdbc:mysql://114.132.79.213:3306/shadow_ds1?serverTimezone=UTC&useSSL=false
+        username: sharding
+        password: sharding321!
+        connectionTimeoutMilliseconds: 30000
+        idleTimeoutMilliseconds: 60000
+        maxLifetimeMilliseconds: 1800000
+        maxPoolSize: 10
+        minPoolSize: 1
+    rules:
+      # ???????
+      shadow:
+        # ??????????
+        dataSources:
+          shadowDataSource0:
+            productionDataSourceName: db0
+            shadowDataSourceName: shadow_ds0
+          shadowDataSource1:
+            productionDataSourceName: db1
+            shadowDataSourceName: shadow_ds1
+        tables:
+          # ????????
+          t_order:
+            # ?????
+            dataSourceNames:
+              - shadowDataSource0
+              - shadowDataSource1
+            # ??????
+            shadowAlgorithmNames:
+              - user_id_update_match_algorithm
+              - user_id_insert_match_algorithm
+              - user_id_delete_match_algorithm
+              - user_id_select_match_algorithm
+              - sql_hint_algorithm
+        defaultShadowAlgorithmName: sql_hint_algorithm
+        shadowAlgorithms:
+          # ?????user_id?120??????????
+          user_id_update_match_algorithm:
+            type: VALUE_MATCH
+            props:
+              operation: UPDATE
+              column: user_id
+              value: 120
+          # ?????user_id?120??????????
+          user_id_delete_match_algorithm:
+            type: VALUE_MATCH
+            props:
+              operation: DELETE
+              column: user_id
+              value: 120
+          # ?????user_id?120??????????
+          user_id_insert_match_algorithm:
+            type: VALUE_MATCH
+            props:
+              operation: INSERT
+              column: user_id
+              value: 120
+          # ?????user_id?120??????????
+          user_id_select_match_algorithm:
+            type: VALUE_MATCH
+            props:
+              operation: SELECT
+              column: user_id
+              value: 120
+          # ???sql?????/* SHARDINGSPHERE_HINT: SHADOW=true */????????
+          sql_hint_algorithm:
+            type: SQL_HINT
+      sharding:
+        shardingAlgorithms:
+          shadow_db:
+            type: INLINE
+            props:
+              algorithm-expression: shadowDataSource$->{user_id % 2}
+          table-inline:
+            type: INLINE
+            props:
+              algorithm-expression: t_order$->{order_id % 4}
+        tables:
+          t_order:
+            actualDataNodes: shadowDataSource$->{0..1}.t_order$->{0..3}
+            tableStrategy:
+              standard:
+                shardingColumn: order_id
+                shardingAlgorithmName: table-inline
+            databaseStrategy:
+              standard:
+                shardingColumn: user_id
+                shardingAlgorithmName: shadow_db
+            keyGenerateStrategy:
+              column: order_id
+              keyGeneratorName: snowflake
+            # ?????????????????????????????????
+            auditStrategy:
+              auditorNames:
+                - sharding_key_required_auditor
+        keyGenerators:
+          snowflake:
+            type: SNOWFLAKE
+        auditors:
+          sharding_key_required_auditor:
+            type: DML_SHARDING_CONDITIONS
+    props:
+      sql-show: true
+
+
+
+logging:
+  config: classpath:logConfig/logback-dev.xml
+  level:
+    root: INFO
+    com:
+      github:
+        lazyboyl:
+          shardingsphere: DEBUG
+
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml

@@ -1,0 +1,103 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  application:
+    name: sharding-readwrite
+  main:
+    allow-bean-definition-overriding: true
+  shardingsphere:
+    dataSources:
+      # 写数据源
+      write_db0:
+        dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://114.132.79.213:3306/sharding_db0?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
+        username: sharding
+        password: sharding321!
+      write_db1:
+        dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://114.132.79.213:3306/sharding_db1?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
+        username: sharding
+        password: sharding321!
+      # 读数据源，此处为了方便指向一个数据库，生产上可以自行搭建读写分离，然后将当前读的配置指向读的数据库的地址
+      read_db0:
+        dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://114.132.79.213:3306/sharding_db0?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
+        username: sharding
+        password: sharding321!
+      read_db1:
+        dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://114.132.79.213:3306/sharding_db1?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
+        username: sharding
+        password: sharding321!
+    # 定义分片规则
+    rules:
+      # 配置读写分离，配置分片规则的时候千万不要使用主键或者自增ID来进行分片，否则会报分片键与数据库中的column不匹配
+      readwrite_splitting:
+        dataSources:
+          readwrite_ds0:
+            writeDataSourceName: write_db0
+            readDataSourceNames:
+              - read_db0
+            transactionalReadQueryStrategy: DYNAMIC
+            loadBalancerName: random
+          readwrite_ds1:
+            writeDataSourceName: write_db1
+            readDataSourceNames:
+              - read_db1
+            transactionalReadQueryStrategy: DYNAMIC
+            loadBalancerName: random
+        # 配置负载均衡策略
+        loadBalancers:
+          random:
+            type: RANDOM
+      sharding:
+        shardingAlgorithms:
+          table-inline:
+            type: INLINE
+            props:
+              algorithm-expression: t_order$->{order_id % 4}
+          database-inline:
+            type: INLINE
+            props:
+              algorithm-expression: readwrite_ds$->{order_id % 2}
+        tables:
+          t_order:
+            actualDataNodes: readwrite_ds$->{0..1}.t_order$->{0..3}
+            tableStrategy:
+              standard:
+                shardingColumn: order_id
+                shardingAlgorithmName: table-inline
+            databaseStrategy:
+              standard:
+                shardingColumn: order_id
+                shardingAlgorithmName: database-inline
+            keyGenerateStrategy:
+              column: order_id
+              keyGeneratorName: snowflake
+        keyGenerators:
+          snowflake:
+            type: SNOWFLAKE
+        auditors:
+          sharding_key_required_auditor:
+            type: DML_SHARDING_CONDITIONS
+    props:
+      sql-show: true
+
+
+logging:
+  config: classpath:logConfig/logback-dev.xml
+  level:
+    root: INFO
+    com:
+      github:
+        lazyboyl:
+          shardingsphere: DEBUG
+
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lazyboyl.sharding.example.dao.OrderComplexDao">
+    <resultMap id="BaseResultMap" type="com.lazyboyl.sharding.example.entity.OrderComplex">
+        <id column="order_id" jdbcType="VARCHAR" property="orderId"/>
+        <result column="order_no" jdbcType="VARCHAR" property="orderNo"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="create_time" jdbcType="DATE" property="createTime"/>
+    </resultMap>
+
+    <!-- 查询订单 -->
+    <select id="queryOrderComplex" resultMap="BaseResultMap">
+        select *
+        from t_order_complex
+        <where>
+            <if test="orderId!=null and orderId >0">
+                and order_id = #{orderId}
+            </if>
+            <if test="userId!=null and userId >0">
+                and user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

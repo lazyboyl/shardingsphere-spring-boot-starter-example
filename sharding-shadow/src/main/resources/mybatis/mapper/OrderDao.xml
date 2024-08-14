@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lazyboyl.sharding.shadow.dao.OrderDao">
+    <resultMap id="BaseResultMap" type="com.lazyboyl.sharding.shadow.entity.Order">
+        <id column="order_id"  property="orderId"/>
+        <result column="order_no" jdbcType="VARCHAR" property="orderNo"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="create_time" jdbcType="DATE" property="createTime"/>
+    </resultMap>
+
+    <!-- 更新订单 -->
+    <update id="updateOrder">
+        update t_order
+        set order_no = #{orderNo}
+        where order_id = #{orderId}
+          and user_id = #{userId}
+    </update>
+
+    <!-- 删除订单 -->
+    <delete id="deleteOrder">
+        delete from t_order where order_id = #{orderId} and user_id = #{userId}
+    </delete>
+
+    <!-- 采用影子库的方式实现 -->
+    <select id="queryByOrderId" resultMap="BaseResultMap">
+        select *
+        from t_order
+        where order_id = #{orderId}/* SHARDINGSPHERE_HINT: SHADOW=true */
+    </select>
+
+    <!-- 查询订单 -->
+    <select id="queryOrder" resultType="com.lazyboyl.sharding.shadow.entity.Order">
+        select *
+        from t_order
+        <where>
+            <if test="orderId!=null and orderId >0">
+                and order_id = #{orderId}
+            </if>
+            <if test="userId!=null and userId >0">
+                and user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+</mapper>
