@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: sharding-nacos
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    nacos:
+      discovery:
+        username: nacos
+        password: 123456
+        server-addr: 10.10.121.46:8848
+        namespace: dev
+      config:
+        username: nacos
+        password: 123456
+        server-addr: 10.10.121.46:8848
+        namespace: dev
+        file-extension: yml
+        group: sharding-nacos
+        contextPath: /nacos
+  profiles:
+    active: dev

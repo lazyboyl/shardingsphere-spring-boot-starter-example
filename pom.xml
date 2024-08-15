@@ -27,6 +27,7 @@
         <module>sharding-mask</module>
         <module>sharding-single</module>
         <module>sharding-broadcast</module>
+        <module>sharding-nacos</module>
     </modules>
 
     <dependencies>
