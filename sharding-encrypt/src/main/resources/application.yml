@@ -30,12 +30,15 @@ spring:
                 cipher:
                   name: user_name
                   encryptorName: none
+                likeQuery:
+                  # 加密字段
+                  name: user_name_like_query
+                  # 加密使用规则
+                  encryptorName: char_digest_like
               # 配置密码的加密规则
               pwd:
                 cipher:
-                  # 加密字段
                   name: pwd
-                  # 加密使用规则
                   encryptorName: aes_encryptor
         encryptors:
           # 空加密算法
@@ -54,6 +57,9 @@ spring:
           # MD5加密算法
           assisted_encryptor:
             type: MD5
+          # 模糊匹配加密算法
+          char_digest_like:
+            type: CHAR_DIGEST_LIKE
       sharding:
         # 分片规则配置
         shardingAlgorithms:
@@ -97,7 +103,7 @@ spring:
       # SQL语句打印
       sql-show: true
       # 简化打印SQL语句
-      sql-simple: true
+      sql-simple: false
       # 禁用执行SQL用于获取数据库元数据
       check-table-metadata-enabled: true
 

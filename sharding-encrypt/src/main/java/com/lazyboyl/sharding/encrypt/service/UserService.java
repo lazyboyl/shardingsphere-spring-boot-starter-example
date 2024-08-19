@@ -52,6 +52,15 @@ public class UserService {
     }
 
     /**
+     * 功能描述： 根据用户名称查询用户数据
+     * @param userName
+     * @return
+     */
+    public User queryUserByUserName(String userName,Long userId){
+        return userDao.queryUserByUserName(userName,userId);
+    }
+
+    /**
      * 功能描述： 实现新增用户
      *
      * @param user 用户实体

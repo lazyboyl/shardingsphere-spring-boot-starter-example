@@ -26,6 +26,20 @@ public class UserController {
     @Resource
     private UserService userService;
 
+
+    /**
+     * 功能描述： 根据用户名称查询用户数据
+     *
+     * @param userName
+     * @return
+     */
+    @PostMapping("queryUserByUserName")
+    @ApiOperation(value = "根据用户名称查询用户数据", tags = TAG_NAME)
+    @ApiOperationSupport(order = 5)
+    public User queryUserByUserName(String userName, Long userId) {
+        return userService.queryUserByUserName(userName, userId);
+    }
+
     /**
      * 功能描述： 根据用户流水ID来删除用户
      *

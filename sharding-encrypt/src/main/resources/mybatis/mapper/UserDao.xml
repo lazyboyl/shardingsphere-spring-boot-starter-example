@@ -4,15 +4,21 @@
     <resultMap id="BaseResultMap" type="com.lazyboyl.sharding.encrypt.entity.User">
         <id column="user_id" jdbcType="VARCHAR" property="userId"/>
         <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
         <result column="pwd" jdbcType="VARCHAR" property="pwd"/>
     </resultMap>
 
     <select id="queryUser" resultMap="BaseResultMap">
         select *
         from t_user
-        where user_name = #{userName}
+        where user_name like concat(#{userName},'%')
           and pwd = #{pwd}
           and user_id = #{userId}
+    </select>
+
+    <!-- 根据用户名称查询用户数据 -->
+    <select id="queryUserByUserName" resultMap="BaseResultMap">
+        select * from t_user  where user_name = #{userName} and user_id = #{userId}
     </select>
 
 

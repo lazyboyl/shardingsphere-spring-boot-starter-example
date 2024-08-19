@@ -26,6 +26,13 @@ public class User {
     private String userName;
 
     /**
+     * 用户名称加密模糊匹配
+     */
+    @Column(name = "user_name_like_query")
+    private String userNameLikeQuery;
+
+
+    /**
      * 用户密码
      */
     @Column(name = "pwd")
@@ -54,4 +61,13 @@ public class User {
     public void setPwd(String pwd) {
         this.pwd = pwd;
     }
+
+    public String getUserNameLikeQuery() {
+        return userNameLikeQuery;
+    }
+
+    public void setUserNameLikeQuery(String userNameLikeQuery) {
+        this.userNameLikeQuery = userNameLikeQuery;
+    }
+
 }
