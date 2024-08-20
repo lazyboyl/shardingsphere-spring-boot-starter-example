@@ -28,6 +28,7 @@
         <module>sharding-single</module>
         <module>sharding-broadcast</module>
         <module>sharding-nacos</module>
+        <module>sharding-hint</module>
     </modules>
 
     <dependencies>

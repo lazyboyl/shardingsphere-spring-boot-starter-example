@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <property name="log.root.level" value="DEBUG"/> <!-- 日志级别 -->
+    <property name="log.other.level" value="DEBUG"/> <!-- 其他日志级别 -->
+    <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+        </layout>
+    </appender>
+    <appender name="fileInfoLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <encoder>
+            <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+        </encoder>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--生成日志的所在的路径-->
+            <fileNamePattern>
+                E:\csdn-learn-work\shardingsphere-spring-boot-starter-example\sharding-hint\logs\%d\dev.%d.%i.log.gz
+            </fileNamePattern>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <maxFileSize>100MB</maxFileSize>
+            <totalSizeCap>4GB</totalSizeCap>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+    </appender>
+    <appender name="fileErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+        </encoder>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--错误日志的生成文件的位置-->
+            <fileNamePattern>
+                E:\csdn-learn-work\shardingsphere-spring-boot-starter-example\sharding-hint\logs\%d\dev.error.%d.%i.log.gz
+            </fileNamePattern>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <maxFileSize>100MB</maxFileSize>
+            <totalSizeCap>4GB</totalSizeCap>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+    </appender>
+    <root level="debug">
+        <appender-ref ref="consoleLog"/>
+        <appender-ref ref="fileInfoLog"/>
+        <appender-ref ref="fileErrorLog"/>
+    </root>
+</configuration>
