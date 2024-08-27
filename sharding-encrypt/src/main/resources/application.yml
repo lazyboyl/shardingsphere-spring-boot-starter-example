@@ -37,9 +37,14 @@ spring:
                   encryptorName: char_digest_like
               # 配置密码的加密规则
               pwd:
+                # 设置原字段不加密
                 cipher:
                   name: pwd
-                  encryptorName: aes_encryptor
+                  encryptorName: none
+                # 设置辅助查询字段的值为MD5加密以后的值
+                assistedQuery:
+                  name: pwd_cipher
+                  encryptorName: assisted_encryptor
         encryptors:
           # 空加密算法
           none:
