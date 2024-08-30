@@ -12,14 +12,14 @@ spring:
         dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
         driverClassName: com.mysql.jdbc.Driver
         url: jdbc:mysql://114.132.79.213:3306/sharding_db0?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
-        username: sharding
-        password: sharding321!
+        username: shardinggit
+        password: 1qaz2wsx!
       db1:
         dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
         driverClassName: com.mysql.jdbc.Driver
         url: jdbc:mysql://114.132.79.213:3306/sharding_db1?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
-        username: sharding
-        password: sharding321!
+        username: shardinggit
+        password: 1qaz2wsx!
     rules:
       # 脱敏配置
       mask:
@@ -105,8 +105,8 @@ spring:
       sql-show: true
       # 简化打印SQL语句
       sql-simple: true
-      # 禁用执行SQL用于获取数据库元数据
-      check-table-metadata-enabled: true
+      # 禁用执行SQL用于获取数据库元数据,若需要mask不能禁用，否则无法获取表结构会导致启动报错
+      check-table-metadata-enabled: false
 
 server:
   port: 8003
