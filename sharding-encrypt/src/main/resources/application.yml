@@ -26,25 +26,16 @@ spring:
         tables:
           t_user:
             columns:
-              user_name:
-                cipher:
-                  name: user_name
-                  encryptorName: none
-                likeQuery:
-                  # 加密字段
-                  name: user_name_like_query
-                  # 加密使用规则
-                  encryptorName: char_digest_like
               # 配置密码的加密规则
               pwd:
                 # 设置原字段不加密
                 cipher:
                   name: pwd
-                  encryptorName: none
+                  encryptorName: aes_encryptor
                 # 设置辅助查询字段的值为MD5加密以后的值
                 assistedQuery:
                   name: pwd_cipher
-                  encryptorName: assisted_encryptor
+                  encryptorName: md5_myself
         encryptors:
           # 空加密算法
           none:
@@ -62,9 +53,6 @@ spring:
           # MD5加密算法
           assisted_encryptor:
             type: MD5
-          # 模糊匹配加密算法
-          char_digest_like:
-            type: CHAR_DIGEST_LIKE
       sharding:
         # 分片规则配置
         shardingAlgorithms:

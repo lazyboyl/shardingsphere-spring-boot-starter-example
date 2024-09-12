@@ -2,9 +2,8 @@ package com.lazyboyl.sharding.algorithm.encrypt;
 
 
 import lombok.EqualsAndHashCode;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
-import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -58,28 +57,12 @@ public class Md5EncryptAlgorithm implements EncryptAlgorithm {
         return o == null ? "" : String.valueOf(o);
     }
 
+
     @Override
-    public Object encrypt(Object o, AlgorithmSQLContext algorithmSQLContext) {
+    public Object encrypt(Object o, EncryptContext encryptContext) {
         if (null == o) {
             return null;
         }
         return getMD5HashWithSalt(getObjStr(o), md5Slat);
     }
-
-    @Override
-    public Object decrypt(Object o, AlgorithmSQLContext algorithmSQLContext) {
-        return o;
-    }
-
-    /**
-     * 此处一定要进行配置，否则使用此处自定义的配置会导致启动报错
-     *
-     * @return
-     */
-    @Override
-    public EncryptAlgorithmMetaData getMetaData() {
-        // 是否支持解密，是否支持等效过滤器，是否支持like
-        return new EncryptAlgorithmMetaData(true, true, false);
-    }
-
 }

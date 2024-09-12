@@ -82,7 +82,7 @@ spring:
       # SQL语句打印
       sql-show: true
       # 简化打印SQL语句
-      sql-simple: true
+      sql-simple: false
       # 禁用执行SQL用于获取数据库元数据
       check-table-metadata-enabled: true
 

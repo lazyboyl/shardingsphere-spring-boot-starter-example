@@ -2,9 +2,9 @@ package com.lazyboyl.sharding.encrypt.algorithm;
 
 
 
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
-import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
 import java.util.Properties;
 
@@ -13,7 +13,7 @@ import java.util.Properties;
  *
  * @author linzf
  */
-public class NoEncryptAlgorithm implements EncryptAlgorithm {
+public class NoEncryptAlgorithm implements AssistedEncryptAlgorithm {
 
     private Properties props;
 
@@ -33,17 +33,7 @@ public class NoEncryptAlgorithm implements EncryptAlgorithm {
 
 
     @Override
-    public Object encrypt(Object o, AlgorithmSQLContext algorithmSQLContext) {
+    public Object encrypt(Object o, EncryptContext encryptContext) {
         return o;
-    }
-
-    @Override
-    public Object decrypt(Object o, AlgorithmSQLContext algorithmSQLContext) {
-        return o;
-    }
-
-    @Override
-    public EncryptAlgorithmMetaData getMetaData() {
-        return new EncryptAlgorithmMetaData(true, true, true);
     }
 }

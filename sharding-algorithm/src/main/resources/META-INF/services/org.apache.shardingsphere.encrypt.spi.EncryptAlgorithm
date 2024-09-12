@@ -1,3 +1,2 @@
 com.lazyboyl.sharding.algorithm.encrypt.Md5EncryptAlgorithm
 com.lazyboyl.sharding.algorithm.encrypt.NoEncryptAlgorithm
-com.lazyboyl.sharding.algorithm.encrypt.CharDigestLikeEncryptAlgorithm
