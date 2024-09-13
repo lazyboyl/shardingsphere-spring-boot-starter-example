@@ -58,14 +58,5 @@ public class OrderService {
         return orderDao.queryOrder(order);
     }
 
-    /**
-     * xml中编写影子库规则来实现路由
-     *
-     * @param orderId
-     * @return
-     */
-    public Order checkOrderShadow(Long orderId) {
-        return orderDao.queryByOrderId(orderId);
-    }
 
 }

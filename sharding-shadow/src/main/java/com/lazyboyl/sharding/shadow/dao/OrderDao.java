@@ -33,12 +33,5 @@ public interface OrderDao extends Mapper<Order> {
      */
     Order queryOrder(Order order);
 
-    /**
-     * 采用影子库的方式实现
-     *
-     * @param orderId
-     * @return
-     */
-    Order queryByOrderId(Long orderId);
 
 }

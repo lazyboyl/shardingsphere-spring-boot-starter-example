@@ -72,21 +72,9 @@ public class OrderController {
     @ApiOperation(value = "影子库订单查询非xml", tags = TAG_NAME)
     @ApiOperationSupport(order = 2)
     public Order queryOrder(@RequestBody Order order) {
-        return orderService.queryOrder(order);
+        Order orderQuery = orderService.queryOrder(order);
+        return orderQuery;
     }
 
-
-    /**
-     * xml中编写影子库规则来实现路由
-     *
-     * @param orderId 订单流水ID
-     * @return 返回查询结果
-     */
-    @PostMapping("checkOrderShadow")
-    @ApiOperation(value = "影子库订单查询", tags = TAG_NAME)
-    @ApiOperationSupport(order = 3)
-    public Order checkOrderShadow(Long orderId) {
-        return orderService.checkOrderShadow(orderId);
-    }
 
 }
