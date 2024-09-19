@@ -1,0 +1,356 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+######################################################################################################
+#
+# Here you can configure the rules for the proxy.
+# This example is configuration of sharding rule.
+#
+######################################################################################################
+#
+#databaseName: sharding_db
+#
+#dataSources:
+#  ds_0:
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_0
+#    username: postgres
+#    password: postgres
+#    connectionTimeoutMilliseconds: 30000
+#    idleTimeoutMilliseconds: 60000
+#    maxLifetimeMilliseconds: 1800000
+#    maxPoolSize: 50
+#    minPoolSize: 1
+#  ds_1:
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_1
+#    username: postgres
+#    password: postgres
+#    connectionTimeoutMilliseconds: 30000
+#    idleTimeoutMilliseconds: 60000
+#    maxLifetimeMilliseconds: 1800000
+#    maxPoolSize: 50
+#    minPoolSize: 1
+#
+#rules:
+#- !SHARDING
+#  tables:
+#    t_order:
+#      actualDataNodes: ds_${0..1}.t_order_${0..1}
+#      tableStrategy:
+#        standard:
+#          shardingColumn: order_id
+#          shardingAlgorithmName: t_order_inline
+#      keyGenerateStrategy:
+#        column: order_id
+#        keyGeneratorName: snowflake
+#      auditStrategy:
+#        auditorNames:
+#          - sharding_key_required_auditor
+#        allowHintDisable: true
+#    t_order_item:
+#      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+#      tableStrategy:
+#        standard:
+#          shardingColumn: order_id
+#          shardingAlgorithmName: t_order_item_inline
+#      keyGenerateStrategy:
+#        column: order_item_id
+#        keyGeneratorName: snowflake
+#  bindingTables:
+#    - t_order,t_order_item
+#  defaultDatabaseStrategy:
+#    standard:
+#      shardingColumn: user_id
+#      shardingAlgorithmName: database_inline
+#  defaultTableStrategy:
+#    none:
+#  defaultAuditStrategy:
+#    auditorNames:
+#      - sharding_key_required_auditor
+#    allowHintDisable: true
+#
+#  shardingAlgorithms:
+#    database_inline:
+#      type: INLINE
+#      props:
+#        algorithm-expression: ds_${user_id % 2}
+#    t_order_inline:
+#      type: INLINE
+#      props:
+#        algorithm-expression: t_order_${order_id % 2}
+#    t_order_item_inline:
+#      type: INLINE
+#      props:
+#        algorithm-expression: t_order_item_${order_id % 2}
+#
+#  keyGenerators:
+#    snowflake:
+#      type: SNOWFLAKE
+#
+#  auditors:
+#    sharding_key_required_auditor:
+#      type: DML_SHARDING_CONDITIONS
+#
+#- !BROADCAST
+#  tables:
+#    - t_address
+
+######################################################################################################
+#
+# If you want to connect to MySQL, you should manually copy MySQL driver to lib directory.
+#
+######################################################################################################
+
+#databaseName: sharding_db
+#
+#dataSources:
+#  ds_0:
+#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?useSSL=false
+#    username: root
+#    password:
+#    connectionTimeoutMilliseconds: 30000
+#    idleTimeoutMilliseconds: 60000
+#    maxLifetimeMilliseconds: 1800000
+#    maxPoolSize: 50
+#    minPoolSize: 1
+#  ds_1:
+#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?useSSL=false
+#    username: root
+#    password:
+#    connectionTimeoutMilliseconds: 30000
+#    idleTimeoutMilliseconds: 60000
+#    maxLifetimeMilliseconds: 1800000
+#    maxPoolSize: 50
+#    minPoolSize: 1
+#
+#rules:
+#- !SHARDING
+#  tables:
+#    t_order:
+#      actualDataNodes: ds_${0..1}.t_order_${0..1}
+#      tableStrategy:
+#        standard:
+#          shardingColumn: order_id
+#          shardingAlgorithmName: t_order_inline
+#      keyGenerateStrategy:
+#        column: order_id
+#        keyGeneratorName: snowflake
+#      auditStrategy:
+#        auditorNames:
+#          - sharding_key_required_auditor
+#        allowHintDisable: true
+#    t_order_item:
+#      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+#      tableStrategy:
+#        standard:
+#          shardingColumn: order_id
+#          shardingAlgorithmName: t_order_item_inline
+#      keyGenerateStrategy:
+#        column: order_item_id
+#        keyGeneratorName: snowflake
+#  bindingTables:
+#    - t_order,t_order_item
+#  defaultDatabaseStrategy:
+#    standard:
+#      shardingColumn: user_id
+#      shardingAlgorithmName: database_inline
+#  defaultTableStrategy:
+#    none:
+#  defaultAuditStrategy:
+#    auditorNames:
+#      - sharding_key_required_auditor
+#    allowHintDisable: true
+#
+#  shardingAlgorithms:
+#    database_inline:
+#      type: INLINE
+#      props:
+#        algorithm-expression: ds_${user_id % 2}
+#    t_order_inline:
+#      type: INLINE
+#      props:
+#        algorithm-expression: t_order_${order_id % 2}
+#    t_order_item_inline:
+#      type: INLINE
+#      props:
+#        algorithm-expression: t_order_item_${order_id % 2}
+#
+#  keyGenerators:
+#    snowflake:
+#      type: SNOWFLAKE
+#
+#  auditors:
+#    sharding_key_required_auditor:
+#      type: DML_SHARDING_CONDITIONS
+#
+#- !BROADCAST
+#  tables:
+#    - t_address
+
+
+
+databaseName: sharding_db
+
+dataSources:
+  db0:
+    password: sharding321!
+    username: sharding
+    url: jdbc:mysql://114.132.79.213:3306/sharding_db0?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
+  db1:
+    username: sharding
+    url: jdbc:mysql://114.132.79.213:3306/sharding_db1?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2b8
+    password: sharding321!
+rules:
+  - !MASK
+    maskAlgorithms:
+      mask_before_special_chars_mask_id:
+        props:
+          special-chars: '@'
+          replace-char: '*'
+        type: MASK_BEFORE_SPECIAL_CHARS
+      mask_from_x_to_y_id:
+        type: MASK_FROM_X_TO_Y
+        props:
+          to-y: 5
+          from-x: 2
+          replace-char: '*'
+      keep_first_n_last_m_mask_id:
+        type: KEEP_FIRST_N_LAST_M
+        props:
+          last-m: 4
+          first-n: 3
+          replace-char: '*'
+      myself_mask_id:
+        type: MyselfMask
+      md5_mask_id:
+        type: MD5
+    tables:
+      t_mask:
+        columns:
+          keep_first_n_last_m_mask:
+            maskAlgorithm: keep_first_n_last_m_mask_id
+          mask_from_x_to_y:
+            maskAlgorithm: mask_from_x_to_y_id
+          md5_mask:
+            maskAlgorithm: md5_mask_id
+          myself_mask:
+            maskAlgorithm: myself_mask_id
+          mask_before_special_chars_mask:
+            maskAlgorithm: mask_before_special_chars_mask_id
+  - !ENCRYPT
+    encryptors:
+      aes_encryptor:
+        props:
+          aes-key-value: 123456abc
+        type: AES
+      none:
+        type: NONE
+      assisted_encryptor:
+        type: MD5
+      char_digest_like:
+        type: CHAR_DIGEST_LIKE
+    tables:
+      t_user:
+        columns:
+          user_name:
+            likeQuery:
+              name: user_name_like_query
+              encryptorName: char_digest_like
+            cipher:
+              name: user_name
+              encryptorName: none
+          pwd:
+            assistedQuery:
+              name: pwd_cipher
+              encryptorName: assisted_encryptor
+            cipher:
+              name: pwd
+              encryptorName: none
+  - !SHARDING
+    shardingAlgorithms:
+      mask_db_complex:
+        props:
+          algorithm-expression: db${id % 2}
+        type: INLINE
+      mask_table_complex:
+        type: INLINE
+        props:
+          algorithm-expression: t_mask${id % 4}
+      user_db_complex:
+        props:
+          algorithm-expression: db${user_id % 2}
+        type: INLINE
+      user_table_complex:
+        type: INLINE
+        props:
+          algorithm-expression: t_user${user_id % 4}
+      database-inline:
+        type: INLINE
+        props:
+          algorithm-expression: db${order_id % 2}
+      table-inline:
+        type: INLINE
+        props:
+          algorithm-expression: t_order${order_id % 4}
+    tables:
+      t_mask:
+        databaseStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: mask_db_complex
+        tableStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: mask_table_complex
+        keyGenerateStrategy:
+          column: id
+          keyGeneratorName: snowflake
+        actualDataNodes: db${0..1}.t_mask${0..3}
+      t_user:
+        auditStrategy:
+          auditorNames:
+            - sharding_key_required_auditor
+        tableStrategy:
+          standard:
+            shardingAlgorithmName: user_table_complex
+            shardingColumn: user_id
+        actualDataNodes: db${0..1}.t_user${0..3}
+        databaseStrategy:
+          standard:
+            shardingAlgorithmName: user_db_complex
+            shardingColumn: user_id
+        keyGenerateStrategy:
+          column: user_id
+          keyGeneratorName: snowflake
+      t_order:
+        tableStrategy:
+          standard:
+            shardingAlgorithmName: table-inline
+            shardingColumn: order_id
+        keyGenerateStrategy:
+          keyGeneratorName: snowflake
+          column: order_id
+        actualDataNodes: db${0..1}.t_order${0..3}
+        databaseStrategy:
+          standard:
+            shardingAlgorithmName: database-inline
+            shardingColumn: order_id
+    keyGenerators:
+      snowflake:
+        type: SNOWFLAKE
+    auditors:
+      sharding_key_required_auditor:
+        type: DML_SHARDING_CONDITIONS
