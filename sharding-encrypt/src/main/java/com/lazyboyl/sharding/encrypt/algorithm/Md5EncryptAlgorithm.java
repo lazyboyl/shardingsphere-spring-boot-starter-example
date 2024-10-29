@@ -4,6 +4,7 @@ package com.lazyboyl.sharding.encrypt.algorithm;
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
 import java.security.MessageDigest;
@@ -80,6 +81,11 @@ public class Md5EncryptAlgorithm implements EncryptAlgorithm {
     public EncryptAlgorithmMetaData getMetaData() {
         // 是否支持解密，是否支持等效过滤器，是否支持like
         return new EncryptAlgorithmMetaData(true, true, false);
+    }
+
+    @Override
+    public AlgorithmConfiguration toConfiguration() {
+        return new AlgorithmConfiguration(this.getType(), this.props);
     }
 
 }

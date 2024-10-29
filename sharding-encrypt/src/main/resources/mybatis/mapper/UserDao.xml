@@ -4,7 +4,6 @@
     <resultMap id="BaseResultMap" type="com.lazyboyl.sharding.encrypt.entity.User">
         <id column="user_id" jdbcType="VARCHAR" property="userId"/>
         <result column="user_name" jdbcType="VARCHAR" property="userName"/>
-        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
         <result column="pwd" jdbcType="VARCHAR" property="pwd"/>
     </resultMap>
 

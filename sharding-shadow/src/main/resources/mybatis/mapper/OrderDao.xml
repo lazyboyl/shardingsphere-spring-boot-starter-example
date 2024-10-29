@@ -29,7 +29,7 @@
     </select>
 
     <!-- 查询订单 -->
-    <select id="queryOrder" resultType="com.lazyboyl.sharding.shadow.entity.Order">
+    <select id="queryOrder" resultMap="BaseResultMap">
         select *
         from t_order
         <where>

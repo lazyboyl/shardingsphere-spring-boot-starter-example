@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
 import java.io.IOException;
@@ -161,5 +162,10 @@ public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm {
     @Override
     public EncryptAlgorithmMetaData getMetaData() {
         return new EncryptAlgorithmMetaData(true, true, true);
+    }
+
+    @Override
+    public AlgorithmConfiguration toConfiguration() {
+        return new AlgorithmConfiguration(this.getType(), null);
     }
 }

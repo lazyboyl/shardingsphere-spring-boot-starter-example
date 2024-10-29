@@ -26,7 +26,7 @@
         <url/>
     </scm>
     <properties>
-        <shardingsphere.version>5.5.0</shardingsphere.version>
+        <shardingsphere.version>5.5.1</shardingsphere.version>
     </properties>
     <dependencies>
         <dependency>
@@ -39,19 +39,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc</artifactId>
-            <version>${shardingsphere.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-test-util</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
 
     </dependencies>
 
